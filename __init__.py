@@ -39,15 +39,18 @@ import bpy
 # The register
 def register():
     bpy.utils.register_module(__name__)
+    bpy.types.Object.shape_groups = bpy.props.CollectionProperty(type = ui.ShapeGroup)
+    bpy.types.Object.shape_group_inside = bpy.props.CollectionProperty(type = ui.ShapeGroupInside)
+    bpy.types.Object.active_shape_group_index = bpy.props.IntProperty(update = ui.sg_inside_update)
+    bpy.types.Object.active_sg_inside_index = bpy.props.IntProperty()
     bpy.types.Scene.show_split_shapes_help = bpy.props.BoolProperty(
             name = "Show help",
             description = "Display help for this addon")
 
-
 def unregister():
-    bpy.utils.unregister_module(__name__)
     del bpy.types.Scene.show_split_shapes_help
-
+    del bpy.types.Object.active_shape_group_index
+    del bpy.types.Object.active_sg_inside_index
 
 if __name__ == "__main__":
     register()

@@ -187,3 +187,79 @@ class UndrivenShapeKey(bpy.types.Operator):
         else:
             context.active_object.active_shape_key.driver_remove("value")
         return {"FINISHED"}
+
+
+class AddShapeGroup(bpy.types.Operator):
+    bl_idname = "driven.shape_group_add"
+    bl_label = "Add shape group"
+    bl_description = ""
+    bl_options = {"REGISTER", "UNDO"}
+    
+    @classmethod
+    def poll(cls, context):
+        if context.active_bone:
+            if len(context.selected_objects) == 2:
+                if "MESH" in [ob.type for ob in context.selected_objects]:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            if context.active_object.type == "MESH":
+                return True
+            else:
+                return False
+    
+    
+    def execute(self, context):
+        ob = None
+        if len(context.selected_objects) == 2:
+            ob = [ob for ob in context.selected_objects if ob.type == "MESH"][0]
+        else:
+            ob = context.active_object
+        
+        name = "Shape Group %i"
+        n = 0
+        
+        while name % (n) in ob.shape_groups:
+            n += 1
+        sg = ob.shape_groups.add()
+        sg.name = name % (n)
+        
+        ob.active_shape_group_index = len(ob.shape_groups) - 1
+        return {"FINISHED"}
+
+
+class RemoveShapeGroup(bpy.types.Operator):
+    bl_idname = "drven.shape_group_remove"
+    bl_label = "Remove shape group"
+    bl_description = ""
+    bl_options = {"REGISTER", "UNDO"}
+    
+    @classmethod
+    def poll(cls, context):
+        if context.active_bone:
+            if len(context.selected_objects) == 2:
+                if "MESH" in [ob.type for ob in context.selected_objects]:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            if context.active_object.type == "MESH":
+                return True
+            else:
+                return False
+    
+    def execute(self, context):
+        ob = None
+        if len(context.selected_objects) == 2:
+            ob = [ob for ob in context.selected_objects if ob.type == "MESH"][0]
+        else:
+            ob = context.active_object
+        
+        if len(ob.shape_groups) > 0:
+            ob.shape_groups.remove(ob.active_shape_group_index)
+        return {"FINISHED"}
